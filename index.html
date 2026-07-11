@@ -184,8 +184,18 @@
             window.speechSynthesis.cancel();
 
             try {
-                // Completely open AI serverless engine
-                const response = await fetch(`https://pollinations.ai{encodeURIComponent(promptInput)}?system=You are Uncle Obi AI, an elite, brilliant personal assistant designed exclusively to help Uncle Obi. Be smart, clear, and direct.`);
+                // Secure secure POST request pipeline that handles browser connection smoothly
+                const response = await fetch("https://pollinations.ai", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        messages: [
+                            { role: "system", content: "You are Uncle Obi AI, an elite, brilliant personal assistant designed exclusively to help Uncle Obi. Be smart, clear, and direct." },
+                            { role: "user", content: promptInput }
+                        ],
+                        model: "openai"
+                    })
+                });
 
                 if (!response.ok) throw new Error("API Network error");
                 
@@ -199,7 +209,7 @@
             } catch (err) {
                 statusBox.style.display = 'none';
                 replyCard.style.display = 'block';
-                currentResponseText = "Network traffic is busy right now. Please try your question again in a moment!";
+                currentResponseText = "Connection reset. Please click 'Ask AI' again in a moment!";
                 replyText.innerText = currentResponseText;
             }
         }
@@ -211,7 +221,7 @@
                 if (i < text.length) {
                     element.innerText += text.charAt(i);
                     i++;
-                    setTimeout(type, 15);
+                    setTimeout(type, 12);
                 }
             }
             type();
