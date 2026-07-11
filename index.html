@@ -181,34 +181,25 @@
 
             statusBox.style.display = 'block';
             replyCard.style.display = 'none';
-            window.speechSynthesis.cancel(); // Stop any ongoing speech
+            window.speechSynthesis.cancel();
 
             try {
-                // Free serverless API endpoint
-                const response = await fetch("https://huggingface.co", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        inputs: `<|system|>\nYou are Uncle Obi AI, an elite, brilliant personal assistant designed exclusively to help Uncle Obi. Be smart, clear, and direct.\n<|user|>\n${promptInput}\n<|assistant|>\n`
-                    })
-                });
+                // Completely open AI serverless engine
+                const response = await fetch(`https://pollinations.ai{encodeURIComponent(promptInput)}?system=You are Uncle Obi AI, an elite, brilliant personal assistant designed exclusively to help Uncle Obi. Be smart, clear, and direct.`);
 
-                const data = await response.json();
+                if (!response.ok) throw new Error("API Network error");
+                
+                const data = await response.text();
                 statusBox.style.display = 'none';
                 replyCard.style.display = 'block';
 
-                if (data && data[0] && data[0].generated_text) {
-                    const cleanOutput = data[0].generated_text.split("<|assistant|>\n")[1] || data[0].generated_text;
-                    currentResponseText = cleanOutput.trim();
-                    typeEffect(replyText, currentResponseText);
-                } else {
-                    currentResponseText = "System initializing. Click 'Ask AI' again in 5 seconds to process.";
-                    replyText.innerText = currentResponseText;
-                }
+                currentResponseText = data.trim();
+                typeEffect(replyText, currentResponseText);
+                
             } catch (err) {
                 statusBox.style.display = 'none';
                 replyCard.style.display = 'block';
-                currentResponseText = "Connection offline. Please check your internet link.";
+                currentResponseText = "Network traffic is busy right now. Please try your question again in a moment!";
                 replyText.innerText = currentResponseText;
             }
         }
